@@ -18,7 +18,7 @@
 </template>
 
 <script>
-
+  import axios from 'axios'
   import route_mixin from '@/mixins/route-mixin'
   // import {articlelistdata} from '@/database/data'
 
@@ -39,7 +39,7 @@
       imgCreation: function (msid) {
         return msid ? 'https://opt.toiimg.com/recuperator/img/nbt/m-' + msid  + ',r-1,w-80,h-60/Navbharat-Times.jpg' : 'https://opt.toiimg.com/recuperator/img/nbt/m-47095658,r-4,w-250,h-172/NBT.jpg'
       },
-      urlCreation: function (seo,msid) {
+      urlCreation: function (msid) {
         return msid ? 'seo/articleshow/' + msid  + '.cms' : 'seo/articleshow/61030583.cms'
       },
       chkfirstart: function(index){
@@ -52,14 +52,21 @@
         var vm = this;
         var msid = this.$route.query.msid || this.$route.params.msid;
         vm.$data.dataset = {}
-
+        /* if(window){
+            var loader = document.getElementById('loadingDiv');
+            loader ? (loader.style.display = 'block') : undefined;
+        } */
         if(msid){
-              fetch('http://navbharattimes.indiatimes.com/feeds/appnavigationlistv6.cms?tag=alrtdf&feedtype=json&msid='+msid).then(function(response){
-                     response.json().then(function(data){
+              axios.get('http://navbharattimes.indiatimes.com/feeds/appnavigationlistv6.cms?tag=alrtdf&feedtype=json&msid='+msid).then(function(response){
+                     //response.json().then(function(data){
+                        //data = response.data;
                         // vm.$data.dataset = data.wdt_articlelist.articlelistroot;
-                        vm.$data.dataset = data.items;
-                        console.log(vm.$data.dataset);
-                    });
+                        vm.$data.dataset = response.data.items;
+                        // console.log(vm.$data.dataset);
+                        loader ? (loader.style.display = 'none') : undefined;
+                    //});
+              }).catch(e => {
+                  console.log(e)
               });
         }
       }

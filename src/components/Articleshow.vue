@@ -4,8 +4,8 @@
       <div class="story-heading clearfix"><h1>{{dataset.hl}}</h1></div>
       <span class="timestamp" v-if="dataset.lu">{{dataset.lu}}</span>
       <strong v-if="dataset.ag">{{dataset.ag}}</strong>
-      <div class="img_wrap" v-if="dataset.image[0].id">
-        <img :src="imgCreation(dataset.image[0].id)" width="450">
+      <div class="img_wrap" v-if="dataset.id">
+        <img :src="imgCreation(dataset.id)" width="450">
       </div>
       <!-- <div class="artcontent" v-if="dataset.arttextxml && dataset.arttextxml.div.div.content">{{dataset.arttextxml.div.div.content.join('')}}</div>
       <div class="artcontent" v-else-if="dataset.arttextxml && dataset.arttextxml.div.div.p">{{dataset.arttextxml.div.div.p.join('')}}</div> -->
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+  import axios from 'axios'
   import route_mixin from '@/mixins/route-mixin'
   // import {articleshowdata} from '@/database/data'
   export default {
@@ -35,15 +36,21 @@
         var vm = this;
         var msid = this.$route.query.msid || this.$route.params.msid;
         vm.$data.dataset = {}
-
+        /* if(window){
+            var loader = document.getElementById('loadingDiv');
+            loader ? (loader.style.display = 'block') : undefined;
+        } */
         if(msid){
-           fetch('http://navbharattimes.indiatimes.com/feeds/appnavigationshowv3next.cms?feedtype=sjson&version=v4&tag=news&msid=' + msid.replace('.cms','')).then(function(response){
-              response.json().then(function(data){                    
+           axios.get('http://navbharattimes.indiatimes.com/feeds/appnavigationshowv3next.cms?feedtype=sjson&version=v4&tag=news&msid=' + msid.replace('.cms','')).then(function(response){
+              //response.json().then(function(data){                    
                   // vm.$data.dataset = data.wdt_articleshow.article ;
-                  vm.$data.dataset = data.it ;
-                  console.log(vm.$data.dataset);
+                  vm.$data.dataset = response.data.it ;
+                  // console.log(vm.$data.dataset);
+                  loader ? (loader.style.display = 'none') : undefined;
+              //});
+              }).catch(e => {
+                  console.log(e)
               });
-          });
         }
       }
     },
